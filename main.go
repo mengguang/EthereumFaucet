@@ -48,6 +48,7 @@ func sendMoney(toAddress string) error {
 		log.Printf("client dial error: %v",err)
 		return err
 	}
+	defer client.Close()
 	ctx := context.Background()
 	nonce, _ := client.NonceAt(ctx, account.Address, nil)
 	fmt.Println("nonce: ", nonce)
@@ -73,6 +74,7 @@ func getBalance(address string) *big.Int {
 		log.Printf("client dial error: %v",err)
 		return new(big.Int)
 	}
+	defer client.Close()
 	ctx := context.Background()
 	fmt.Println(common.HexToAddress(address))
 	balance, err := client.BalanceAt(ctx, common.HexToAddress(address), nil)

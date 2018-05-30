@@ -57,8 +57,8 @@ func sendMoney(toAddress string) error {
 	}
 
 	fmt.Println("nonce: ", globalNonce)
-	var gasLimit uint64 = 320000
-	gasPrice := big.NewInt(0)
+	var gasLimit uint64 = 21000
+	gasPrice := big.NewInt(1)
 
 	amount := big.NewInt(16888)
 	amount.Mul(amount,big.NewInt(1000000000000000000))

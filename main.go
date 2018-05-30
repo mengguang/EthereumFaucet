@@ -19,6 +19,7 @@ const defaultWalletPassword = "123qwe"
 
 var walletPath *string
 var rpcUrl *string
+var globalNonce uint64
 
 func newTestAccount(walletPath string, walletPassword string) {
 	wallet := keystore.NewKeyStore(walletPath,
@@ -51,20 +52,24 @@ func sendMoney(toAddress string) error {
 	defer client.Close()
 	ctx := context.Background()
 	nonce, _ := client.NonceAt(ctx, account.Address, nil)
-	fmt.Println("nonce: ", nonce)
-	var gasLimit uint64 = 200000
-	gasPrice := big.NewInt(1)
+	if globalNonce < nonce {
+		globalNonce = nonce
+	}
+
+	fmt.Println("nonce: ", globalNonce)
+	var gasLimit uint64 = 320000
+	gasPrice := big.NewInt(0)
 
 	amount := big.NewInt(16888)
 	amount.Mul(amount,big.NewInt(1000000000000000000))
-	fmt.Println("nonce: ", nonce)
-	tx := types.NewTransaction(nonce, common.HexToAddress(toAddress), amount, gasLimit, gasPrice, nil)
+	tx := types.NewTransaction(globalNonce, common.HexToAddress(toAddress), amount, gasLimit, gasPrice, nil)
 	signTx, err := wallet.SignTx(account, tx, nil)
 	err = client.SendTransaction(ctx, signTx)
 	if err != nil {
 		fmt.Println("err:", err)
 		return err
 	}
+	globalNonce++
 	return nil
 }
 
